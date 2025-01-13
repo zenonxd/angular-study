@@ -11,4 +11,8 @@ export class EnviaFormularioService {
     // logica backend pipipopo
     console.log("enviando para o backend");
   }
+
+  test(integer: n) {
+    console.log(n);
+  }
 }

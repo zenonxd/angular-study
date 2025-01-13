@@ -1,27 +1,7 @@
-<p>My first component</p>
+
 
 <h1>
-  {{minhaPropsDeFora}}
+  {{infoDeFora}}
 </h1>
 
-
-<h1 *ngIf="deveMostrarTitulo">Meu titulo</h1>
-<h1 *ngIf="!deveMostrarTitulo">Meu titulo</h1>
-
-
-
-@if (deveMostrarTitulo) {
-  <h1>Meu titulo</h1>
-} @else if (name == "Olavo") {
-  <h2>Olá, @name!</h2>
-} @else {
-  <h1>Não foi verdadeiro</h1>
-}
-
-
-@for (item of listItems; track item) {
-  <p>{{item}}</p>
-}
-
-
-<p *ngFor="let item of listItems">{{item}}</p>
+<button (click)="submit()">Clique</button>

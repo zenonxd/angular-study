@@ -254,7 +254,7 @@ export const routes: Routes = [
 
 Usamos como exemplo o path vazio para referenciar o root.
 
-❗Para que esse mapeamento funcione, precisamos deixar a tag de ``router-outlet`` dentro do componente principal (caso seja necessário que as rotas sejam refletidas).
+❗Para que esse mapeamento funcione, precisamos deixar a tag de ``router-outlet`` dentro do componente principal, o html (caso seja necessário que as rotas sejam refletidas).
 
 # Estados de um componente
 
@@ -472,6 +472,8 @@ Passando uma informação que está dentro do AppComponent, para dentro do HomeC
 
 ## @Input
 
+Filho recebe informação do pai, você vai entender isso mais abaixo.
+
 No HomeComponent, podemos declarar que ele irá receber um atributo do tipo ``@Input``, chamado "minhaPropsDeFora", seu tipo será ``string``.
 
 ![img_19.png](img_19.png)
@@ -496,8 +498,87 @@ AppComponent.html ⬇️
 
 ![img_23.png](img_23.png)
 
+### Resumo
+
+O que aconteceu aqui é: o homeComponent recebeu informações do appComponent.
+
+1. Foi criado um @Input dentro do homeComponent.ts (visto que ele iria receber algo de fora).
+2. Depois, dentro do appComponent.html, foi utilizado o input dentro da tag do homeComponent
+3. E para que a informação fosse mostrada, dentro do homeComponent.html, foi criado um <h1> mostrando o conteúdo.
+
+O AppComponent está numa posição de "pai" do HomeComponent, visto que é ele que está acionando o Home.
+
+Se quiséssemos que a informação saísse do filho para o pai, usaríamos @Output ⬇️
+
 ## @Output
 
-O que aconteceu no Input foi: o HomeComponent recebeu informações do AppComponent.
+Conforme vimos acima, no @Input o AppComponent enviava informações para o HomeComponent, agora será o oposto.
 
-Atualmente o AppComponent está numa posição de "pai" do nosso HomeComponent. 1h07:02
+Para que o HomeComponent (filha) envie infos para o App (pai), usaremos o @Output juntamente com os "Event emitters".
+
+```ts
+export class HomeComponent {
+  private enviaFormularioService = inject(EnviaFormularioService);
+  
+  name = 'Olavo';
+  
+  @Input("name") infoDeFora!: string;
+
+  @Output() emitindoValorName = new EventEmitter<string>();
+  
+  submit() {
+    this.emitindoValorName.emit(this.name);
+  }
+}
+```
+
+Declaramos no output o ``EventEmitter`` (precisamos passar o tipo de informação), neste caso, string. E dentro da função
+submit, podemos chamar o método ``.emit()``, juntamente com a variável name, referenciando sempre com o ``this``.
+
+Para que o AppComponent consiga escutar essa informação, iremos para o html do mesmo e ao declarar o HomeComponent, colocaremos algo para "escutar"
+ese Output criado:
+
+```angular181html
+<!--é como se fosse um evento dessa tag HTML-->
+<app-home name="teste" (emitindoValorName)="logar($event)")></app-home>
+```
+
+A partir disso, podemos criar essa função ``logar()`` no AppComponent.
+
+```ts
+export class AppComponent {
+  logar(event: string) {
+    console.log(event)
+  }
+}
+```
+
+### Resumo
+
+Criamos no nosso HomeComponent um OutPut, visto que o HomeComponent jogará uma informação para fora, irá se comunicar
+com seu elemento pai (AppComponent).
+
+Esse OutPut é do tipo ``EventEmitter``, que é basicamente um emissor de eventos. Neste caso, ele emitirá eventos do tipo string.
+
+Quando o botão do HomeComponent é clicado, ele irá acionar a sua função "submit" e consequentemente, nosso emissor de eventos.
+
+```angular181html
+<button (click)="submit()">Clique</button>
+```
+
+Por sua vez, no elemento pai, foi colocado um EventBinding para esse OutPut (mesma coisa que colocar um EventBinding para o click,
+mouseover, etc).
+
+Então, quando ocorrer o evento neste componente, a função "logar" será chamada.
+
+```angular181html
+<!--é como se fosse um evento dessa tag HTML-->
+<app-home name="teste" (emitindoValorName)="logar($event)")></app-home>
+```
+
+E essa função recebe o evento por parâmetro, como contexto.
+
+
+
+
+
